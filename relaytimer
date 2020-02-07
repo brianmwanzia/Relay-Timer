@@ -1,0 +1,134 @@
+#include <DS3231.h>
+
+int RELAY = 12; //relay/output pin
+int STATUS = 13; //aesthetics/debug
+
+// Init the DS3231 using the hardware interface
+DS3231  rtc(SDA, SCL);
+
+// Init a Time-data structure
+Time  t;
+
+void setup()
+{
+  //Serial.begin(9600);
+  pinMode(RELAY,OUTPUT); //pin mode
+
+  digitalWrite(RELAY,HIGH);
+  
+  pinMode(STATUS, OUTPUT);
+
+  digitalWrite(STATUS,HIGH);
+
+  delay(1000);
+  
+  // Setup Serial connection
+  //Serial.begin(115200);
+  
+  // Uncomment the next line if you are using an Arduino Leonardo
+  //while (!Serial) {}
+  // Initialize the rtc object
+  rtc.begin();
+  
+  // The following lines can be uncommented to set the date and time
+  /*rtc.setDOW(WEDNESDAY);     // Set Day-of-Week to SUNDAY
+  rtc.setTime(19, 40, 0);     // Set the time to 12:00:00 (24hr format)
+  rtc.setDate(8, 01, 2020);   // Set the date to DD/MM/YYYY
+*/
+ digitalWrite(RELAY,LOW);
+ delay(1500);
+
+ digitalWrite(STATUS,LOW);
+ delay(1500);
+
+ t = rtc.getTime();
+ if (t.hour < 13){
+  int h = t.hour;
+  while (h>0){
+    digitalWrite(STATUS,HIGH);
+    delay(500);
+    digitalWrite(STATUS,LOW);
+    delay(500);
+    h = h-1;
+    }
+  }
+  if (t.hour > 12){
+    int h = t.hour - 12;
+    while (h>0){
+    digitalWrite(STATUS,HIGH);
+    delay(250);
+    digitalWrite(STATUS,LOW);
+    delay(500);
+    h = h-1;
+    }
+  }
+  delay(3000);
+  //digitalWrite(STATUS,HIGH);
+ 
+  
+}
+
+void loop()
+{
+  t = rtc.getTime();   // Get data from the DS3231
+
+  //uncomment if u want serial stuff
+  // Send date over serial connection
+  /*Serial.print("Date: ");
+  Serial.print(t.date, DEC);
+  Serial.print("/");
+  Serial.print(t.mon, DEC);
+  Serial.print("/");
+  Serial.print(t.year, DEC);
+  Serial.println();
+
+  Serial.print("Day of Week: ");
+  Serial.print(t.dow, DEC);
+  
+  Serial.println();
+  Serial.print("Time: ");
+  Serial.print(t.hour, DEC);
+  Serial.print(":");
+  Serial.print(t.min, DEC);
+  Serial.print(":");
+  Serial.print(t.sec, DEC);
+  Serial.println();
+  Serial.println("--------------------------------");
+  */
+  
+  delay(1000); //Delay is for displaying the time in 1 second interval.
+  
+  
+  if ((t.hour > 17) && (t.hour < 22)) 
+  { digitalWrite(RELAY, HIGH); 
+    delay(1000);
+  }
+  
+  if (t.hour > 21) 
+  { digitalWrite(RELAY, LOW); 
+    delay(1000);
+  }
+/*
+  if (t.hour == 2 && t.min == 15) 
+  { digitalWrite(RELAY, HIGH); 
+    delay(1000);
+  }
+  
+  if (t.hour == 3 && t.min == 30) 
+  { digitalWrite(RELAY, LOW); 
+    delay(1000);
+  }*/
+
+  if (t.hour == 4 && t.min == 30) 
+  { digitalWrite(RELAY, HIGH); 
+    delay(1000);
+  }
+  
+  if (t.hour == 6) 
+  { digitalWrite(RELAY, LOW); 
+    delay(1000);
+  }
+  
+  delay(300000);
+  
+}
